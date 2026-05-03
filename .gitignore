@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.py[cod]
+
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+
+frontend/public/uploads/*
+!frontend/public/uploads/.gitkeep

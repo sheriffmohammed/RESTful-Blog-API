@@ -1,0 +1,10 @@
+fastapi[standard]
+uvicorn[standard]
+sqlmodel
+pymysql
+cryptography
+pwdlib[argon2]
+pyjwt
+python-dotenv
+email-validator
+python-multipart
