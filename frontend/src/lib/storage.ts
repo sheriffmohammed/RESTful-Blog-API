@@ -2,6 +2,9 @@ const TOKEN_KEY = "blogging_api_token";
 const HIDDEN_POSTS_KEY = "blogging_hidden_posts";
 const LIKED_POSTS_KEY = "blogging_liked_posts";
 const LIKED_COMMENTS_KEY = "blogging_liked_comments";
+const THEME_KEY = "blogging_theme";
+
+export type ThemeMode = "light" | "dark";
 
 export function getStoredToken() {
   return window.localStorage.getItem(TOKEN_KEY);
@@ -99,4 +102,13 @@ export function setCommentLiked(scope: string, commentId: number, liked: boolean
   }
   map[scope] = [...existing];
   writeNumberMap(LIKED_COMMENTS_KEY, map);
+}
+
+export function getStoredTheme(): ThemeMode | null {
+  const value = window.localStorage.getItem(THEME_KEY);
+  return value === "light" || value === "dark" ? value : null;
+}
+
+export function setStoredTheme(theme: ThemeMode) {
+  window.localStorage.setItem(THEME_KEY, theme);
 }

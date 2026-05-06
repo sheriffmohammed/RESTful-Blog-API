@@ -8,3 +8,5 @@ frontend/*.tsbuildinfo
 
 frontend/public/uploads/*
 !frontend/public/uploads/.gitkeep
+
+.idea/

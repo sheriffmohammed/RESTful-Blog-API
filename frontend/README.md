@@ -13,6 +13,7 @@ A React frontend for the Blogging Platform API. The app lets users browse posts,
 - Like and unlike posts or comments
 - View users who liked posts or comments
 - Upload local avatar and post images during development
+- Toggle between light and dark themes
 - Responsive app shell with React Router navigation
 
 ## Tech Stack
@@ -137,6 +138,10 @@ Authorization: Bearer <access_token>
 ```
 
 If the token is invalid or expired, the user is logged out.
+
+## Theme
+
+The header includes a light/dark theme toggle. The selected theme is saved in `localStorage`, and first-time visitors default to their system color preference.
 
 ## Image Uploads
 

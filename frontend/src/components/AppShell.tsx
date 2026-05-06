@@ -1,8 +1,28 @@
+import { useEffect, useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../lib/auth";
+import { getStoredTheme, setStoredTheme, type ThemeMode } from "../lib/storage";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function getInitialTheme(): ThemeMode {
+  const storedTheme = getStoredTheme();
+
+  if (storedTheme) {
+    return storedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
   const { currentUser, logout, ready } = useAuth();
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    setStoredTheme(theme);
+  }, [theme]);
+
+  const nextTheme = theme === "dark" ? "light" : "dark";
 
   return (
     <div className="app-frame">
@@ -26,6 +46,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <NavLink to="/me" className="nav-link">
             My Space
           </NavLink>
+          <button
+            aria-label={`Switch to ${nextTheme} theme`}
+            className="theme-toggle"
+            onClick={() => setTheme(nextTheme)}
+            title={`Switch to ${nextTheme} theme`}
+            type="button"
+          >
+            <span className="theme-toggle-track" aria-hidden="true">
+              <span className="theme-toggle-icon" />
+            </span>
+          </button>
           {currentUser ? (
             <button className="ghost-button" onClick={logout} type="button">
               Log out
