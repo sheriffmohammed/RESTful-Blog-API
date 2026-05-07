@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ImageUploadField } from "../components/ImageUploadField";
 import { PostCard } from "../components/PostCard";
+import { UserAvatar } from "../components/UserAvatar";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { PostFeed } from "../lib/types";
@@ -162,11 +163,9 @@ export function MyPostsPage() {
         <p className="eyebrow">Profile</p>
         <h1>{currentUser.user_name}</h1>
         <p>{currentUser.email}</p>
-        {currentUser.photo_path ? (
-          <div className="profile-visual">
-            <img alt={currentUser.user_name} className="avatar-preview" src={currentUser.photo_path} />
-          </div>
-        ) : null}
+        <div className="profile-visual">
+          <UserAvatar name={currentUser.user_name} photoPath={currentUser.photo_path} size="profile" />
+        </div>
         <div className="split-actions">
           <Link className="primary-button split-button" to="/posts/new">
             Write a new post

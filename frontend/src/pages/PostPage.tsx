@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ActionMenu } from "../components/ActionMenu";
+import { AuthorLink } from "../components/AuthorLink";
 import { LikesDialog, type LikesDialogAnchor } from "../components/LikesDialog";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -370,10 +371,7 @@ export function PostPage() {
       <section className="post-page">
         <article className="story-panel">
           <div className="story-meta">
-            <span className="author-chip">
-              {post.user_photo ? <img alt={post.user_name} className="author-avatar" src={post.user_photo} /> : <span className="author-icon" aria-hidden="true" />}
-              <span>{post.user_name}</span>
-            </span>
+            <AuthorLink userId={post.user_id} userName={post.user_name} userPhoto={post.user_photo} />
             <div className="meta-cluster">
               <button
                 className="inline-pill inline-button"
@@ -449,14 +447,7 @@ export function PostPage() {
               return (
                 <article key={comment.comment_id} className="comment-card">
                   <div className="post-meta">
-                    <span className="author-chip">
-                      {comment.user_photo ? (
-                        <img alt={comment.user_name} className="author-avatar" src={comment.user_photo} />
-                      ) : (
-                        <span className="author-icon" aria-hidden="true" />
-                      )}
-                      <span>{comment.user_name}</span>
-                    </span>
+                    <AuthorLink userId={comment.user_id} userName={comment.user_name} userPhoto={comment.user_photo} />
                     <span className="meta-cluster">
                       <button
                         className="inline-pill inline-button"

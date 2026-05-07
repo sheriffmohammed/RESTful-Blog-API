@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import { getFeedScope, getLikedPosts, setPostLiked } from "../lib/storage";
 import type { PostFeed, UsersWhoLiked } from "../lib/types";
 import { ActionMenu } from "./ActionMenu";
+import { AuthorLink } from "./AuthorLink";
 import { LikesDialog, type LikesDialogAnchor } from "./LikesDialog";
 
 function formatStamp(value: string) {
@@ -163,10 +164,7 @@ export function PostCard({
     <>
       <article className="post-card">
         <div className="post-meta post-meta-top">
-          <span className="author-chip">
-            {postState.user_photo ? <img alt={postState.user_name} className="author-avatar" src={postState.user_photo} /> : <span className="author-icon" aria-hidden="true" />}
-            <span>{postState.user_name}</span>
-          </span>
+          <AuthorLink userId={postState.user_id} userName={postState.user_name} userPhoto={postState.user_photo} />
           <div className="meta-cluster">
             <button
               className="inline-pill inline-button"

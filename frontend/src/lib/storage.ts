@@ -3,8 +3,10 @@ const HIDDEN_POSTS_KEY = "blogging_hidden_posts";
 const LIKED_POSTS_KEY = "blogging_liked_posts";
 const LIKED_COMMENTS_KEY = "blogging_liked_comments";
 const THEME_KEY = "blogging_theme";
+const THEME_VERSION_KEY = "blogging_theme_version";
+const CURRENT_THEME_VERSION = "2";
 
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "oceanic" | "dark" | "cyberpunk";
 
 export function getStoredToken() {
   return window.localStorage.getItem(TOKEN_KEY);
@@ -106,9 +108,16 @@ export function setCommentLiked(scope: string, commentId: number, liked: boolean
 
 export function getStoredTheme(): ThemeMode | null {
   const value = window.localStorage.getItem(THEME_KEY);
-  return value === "light" || value === "dark" ? value : null;
+  const version = window.localStorage.getItem(THEME_VERSION_KEY);
+
+  if (value === "dark" && version !== CURRENT_THEME_VERSION) {
+    return "oceanic";
+  }
+
+  return value === "light" || value === "oceanic" || value === "dark" || value === "cyberpunk" ? value : null;
 }
 
 export function setStoredTheme(theme: ThemeMode) {
   window.localStorage.setItem(THEME_KEY, theme);
+  window.localStorage.setItem(THEME_VERSION_KEY, CURRENT_THEME_VERSION);
 }

@@ -3,6 +3,13 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { getStoredTheme, setStoredTheme, type ThemeMode } from "../lib/storage";
 
+const themeOptions = [
+  { value: "light", label: "Light" },
+  { value: "oceanic", label: "Oceanic" },
+  { value: "dark", label: "Dark Grey" },
+  { value: "cyberpunk", label: "Cyberpunk" },
+] satisfies { value: ThemeMode; label: string }[];
+
 function getInitialTheme(): ThemeMode {
   const storedTheme = getStoredTheme();
 
@@ -16,13 +23,13 @@ function getInitialTheme(): ThemeMode {
 export function AppShell({ children }: { children: ReactNode }) {
   const { currentUser, logout, ready } = useAuth();
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const activeTheme = themeOptions.find((option) => option.value === theme) ?? themeOptions[0];
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     setStoredTheme(theme);
   }, [theme]);
-
-  const nextTheme = theme === "dark" ? "light" : "dark";
 
   return (
     <div className="app-frame">
@@ -46,17 +53,46 @@ export function AppShell({ children }: { children: ReactNode }) {
           <NavLink to="/me" className="nav-link">
             My Space
           </NavLink>
-          <button
-            aria-label={`Switch to ${nextTheme} theme`}
-            className="theme-toggle"
-            onClick={() => setTheme(nextTheme)}
-            title={`Switch to ${nextTheme} theme`}
-            type="button"
+          <div
+            className="theme-menu-shell"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setThemeMenuOpen(false);
+              }
+            }}
           >
-            <span className="theme-toggle-track" aria-hidden="true">
-              <span className="theme-toggle-icon" />
-            </span>
-          </button>
+            <button
+              aria-expanded={themeMenuOpen}
+              aria-haspopup="menu"
+              className="theme-menu-button"
+              onClick={() => setThemeMenuOpen((open) => !open)}
+              title="Choose theme"
+              type="button"
+            >
+              Theme
+              <span className="theme-menu-current">{activeTheme.label}</span>
+            </button>
+            {themeMenuOpen ? (
+              <div className="theme-menu-popover" role="menu">
+                {themeOptions.map((option) => (
+                  <button
+                    aria-checked={theme === option.value}
+                    className="theme-option"
+                    key={option.value}
+                    onClick={() => {
+                      setTheme(option.value);
+                      setThemeMenuOpen(false);
+                    }}
+                    role="menuitemradio"
+                    type="button"
+                  >
+                    <span className={`theme-swatch theme-swatch-${option.value}`} aria-hidden="true" />
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
           {currentUser ? (
             <button className="ghost-button" onClick={logout} type="button">
               Log out

@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import type { UsersWhoLiked } from "../lib/types";
+import { AuthorLink } from "./AuthorLink";
 
 export type LikesDialogAnchor = {
   top: number;
@@ -97,10 +98,7 @@ export function LikesDialog({
         <div className="likes-list">
           {users.map((user) => (
             <div className="liked-user-row" key={user.user_id}>
-              <span className="author-chip">
-                {user.user_photo ? <img alt={user.user_name} className="author-avatar" src={user.user_photo} /> : <span className="author-icon" aria-hidden="true" />}
-                <span>{user.user_name}</span>
-              </span>
+              <AuthorLink userId={user.user_id} userName={user.user_name} userPhoto={user.user_photo} />
             </div>
           ))}
         </div>

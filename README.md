@@ -12,6 +12,7 @@ A FastAPI backend for a blogging platform with user authentication, posts, comme
 - Like and unlike posts or comments
 - View users who liked a post or comment
 - MySQL database integration with SQLModel
+- React frontend with light, oceanic, dark grey, and cyberpunk themes
 - Environment-based configuration
 
 ## Tech Stack
@@ -50,9 +51,26 @@ Backend dependencies are installed from `requierments.txt`:
 +-- api.py
 +-- db.py
 +-- db_utils.py
++-- frontend
++|   +-- src
++|   +-- public
++|   +-- package.json
 +-- requierments.txt
 +-- README.md
 ```
+
+## Frontend
+
+The React frontend lives in `frontend/`. It includes a grouped theme menu with four saved options:
+
+| Theme | Description |
+| --- | --- |
+| `light` | Original bright editorial theme |
+| `oceanic` | Preserved teal-and-blue dark theme |
+| `dark` | New neutral dark grey theme |
+| `cyberpunk` | Neon cyan, magenta, and yellow dark theme |
+
+Local frontend upload files and build artifacts are ignored by Git. Local environment overrides such as `.env.local` and `.env.*.local` are also ignored.
 
 ## Getting Started
 

@@ -9,11 +9,12 @@ A React frontend for the Blogging Platform API. The app lets users browse posts,
 - JWT-based authenticated sessions
 - Create, edit, and delete posts
 - View individual posts with comments
+- Click post authors to view all posts from that user
 - Add, edit, and delete comments
 - Like and unlike posts or comments
 - View users who liked posts or comments
 - Upload local avatar and post images during development
-- Toggle between light and dark themes
+- Choose between light, oceanic, dark grey, and cyberpunk themes
 - Responsive app shell with React Router navigation
 
 ## Tech Stack
@@ -128,6 +129,7 @@ When this variable is set, API calls are sent to that base URL instead of using 
 | `/posts/new` | Create a new post |
 | `/posts/:postId` | View a single post |
 | `/posts/:postId/edit` | Edit an existing post |
+| `/users/:userId` | View all posts from a selected user |
 
 ## Authentication
 
@@ -141,7 +143,16 @@ If the token is invalid or expired, the user is logged out.
 
 ## Theme
 
-The header includes a light/dark theme toggle. The selected theme is saved in `localStorage`, and first-time visitors default to their system color preference.
+The header includes a grouped theme menu:
+
+| Theme | Description |
+| --- | --- |
+| `light` | The original bright editorial theme |
+| `oceanic` | The preserved teal-and-blue dark theme |
+| `dark` | A new neutral dark grey theme |
+| `cyberpunk` | A neon cyan, magenta, and yellow dark theme |
+
+The selected theme is saved in `localStorage`, and first-time visitors default to their system color preference.
 
 ## Image Uploads
 

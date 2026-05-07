@@ -6,6 +6,7 @@ import { MyPostsPage } from "./pages/MyPostsPage";
 import { PostEditorPage } from "./pages/PostEditorPage";
 import { PostPage } from "./pages/PostPage";
 import { RegisterPage } from "./pages/RegisterPage";
+import { UserPostsPage } from "./pages/UserPostsPage";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/posts/new" element={<PostEditorPage mode="create" />} />
         <Route path="/posts/:postId" element={<PostPage />} />
         <Route path="/posts/:postId/edit" element={<PostEditorPage mode="edit" />} />
+        <Route path="/users/:userId" element={<UserPostsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>
