@@ -2,6 +2,8 @@
 
 A FastAPI backend for a blogging platform with user authentication, posts, comments, likes, and profile updates.
 
+This project is based on the [Blogging Platform API project from roadmap.sh](https://roadmap.sh/projects/blogging-platform-api), with extra features added beyond the original requirements.
+
 ## Features
 
 - User registration and login
