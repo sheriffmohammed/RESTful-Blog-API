@@ -26,11 +26,14 @@ export function ActionMenu({ items }: { items: MenuItem[] }) {
       <button
         aria-expanded={open}
         aria-haspopup="menu"
-        className="icon-button menu-button"
+        aria-label="Post actions"
+        className="menu-button"
         onClick={() => setOpen((value) => !value)}
         type="button"
       >
-        ...
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
 
       {open ? (

@@ -22,10 +22,17 @@ function getStoryTitle(content: string) {
   return normalized.length > 48 ? `${normalized.slice(0, 48)}...` : normalized;
 }
 
-function SparkIcon() {
+function LikeIcon() {
   return (
     <svg aria-hidden="true" className="reaction-icon" viewBox="0 0 24 24">
-      <path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2Z" fill="currentColor" />
+      <path
+        d="M12 20.4 4.9 13.8C3.2 12.2 3 9.5 4.5 7.7c1.6-1.9 4.5-1.9 6.1-.1L12 9.1l1.4-1.5c1.6-1.8 4.5-1.8 6.1.1 1.5 1.8 1.3 4.5-.4 6.1L12 20.4Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.9"
+      />
     </svg>
   );
 }
@@ -201,7 +208,7 @@ export function PostCard({
             onClick={() => void handleToggleLike()}
             type="button"
           >
-            <SparkIcon />
+            <LikeIcon />
           </button>
           <Link aria-label="Open comments" className="icon-button reaction-button" to={`/posts/${postState.post_id}`}>
             <ChatIcon />

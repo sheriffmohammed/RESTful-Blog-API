@@ -886,6 +886,10 @@ code {
   border-color: var(--accent-border);
 }
 
+.reaction-button-active .reaction-icon path {
+  fill: currentColor;
+}
+
 .reaction-icon {
   width: 1rem;
   height: 1rem;
@@ -898,11 +902,39 @@ code {
 
 .menu-shell {
   position: relative;
+  display: inline-flex;
+  justify-content: flex-end;
 }
 
 .menu-button {
-  min-width: 2.2rem;
-  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.18rem;
+  width: 1.8rem;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.menu-button span {
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.menu-button:hover {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.menu-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .menu-popover {
