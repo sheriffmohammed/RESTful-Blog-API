@@ -1,4 +1,5 @@
 const TOKEN_KEY = "blogging_api_token";
+const REFRESH_TOKEN_KEY = "blogging_refresh_token";
 const HIDDEN_POSTS_KEY = "blogging_hidden_posts";
 const LIKED_POSTS_KEY = "blogging_liked_posts";
 const LIKED_COMMENTS_KEY = "blogging_liked_comments";
@@ -18,6 +19,20 @@ export function setStoredToken(token: string) {
 
 export function clearStoredToken() {
   window.localStorage.removeItem(TOKEN_KEY);
+  window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+}
+
+export function getStoredRefreshToken() {
+  return window.localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+export function setStoredRefreshToken(token: string) {
+  window.localStorage.setItem(REFRESH_TOKEN_KEY, token);
+}
+
+export function setStoredTokens(accessToken: string, refreshToken: string) {
+  setStoredToken(accessToken);
+  setStoredRefreshToken(refreshToken);
 }
 
 function readHiddenPostMap() {

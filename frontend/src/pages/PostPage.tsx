@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ActionMenu } from "../components/ActionMenu";
 import { AuthorLink } from "../components/AuthorLink";
+import { AuthPromptDialog } from "../components/AuthPromptDialog";
 import { LikesDialog, type LikesDialogAnchor } from "../components/LikesDialog";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -70,6 +71,7 @@ export function PostPage() {
   const [likesView, setLikesView] = useState<LikesViewState>(defaultLikesView);
   const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
   const [likedCommentIds, setLikedCommentIds] = useState<number[]>([]);
+  const [authPromptOpen, setAuthPromptOpen] = useState(false);
 
   const postId = Number(params.postId);
   const scope = getFeedScope(currentUser?.id);
@@ -228,7 +230,7 @@ export function PostPage() {
 
   async function handleTogglePostLike() {
     if (!token || !post?.post_id) {
-      setError("Login first to like posts.");
+      setAuthPromptOpen(true);
       return;
     }
 
@@ -257,7 +259,7 @@ export function PostPage() {
 
   async function handleToggleCommentLike(commentId: number | null) {
     if (!token || commentId === null) {
-      setError("Login first to like comments.");
+      setAuthPromptOpen(true);
       return;
     }
 
@@ -533,6 +535,11 @@ export function PostPage() {
         open={likesView.open}
         title={likesView.title}
         users={likesView.users}
+      />
+      <AuthPromptDialog
+        message="Sign in to like posts, like comments, and join the conversation."
+        onClose={() => setAuthPromptOpen(false)}
+        open={authPromptOpen}
       />
     </>
   );

@@ -653,6 +653,10 @@ code {
   gap: 1rem;
 }
 
+.register-upload-field {
+  margin-top: 0.75rem;
+}
+
 .field {
   display: grid;
   gap: 0.45rem;
@@ -988,6 +992,58 @@ code {
   background: var(--dialog-surface);
   border: 1px solid var(--stroke);
   box-shadow: var(--shadow);
+}
+
+.auth-prompt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--dialog-backdrop);
+}
+
+.auth-prompt-card {
+  width: min(24rem, 100%);
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--dialog-surface);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+}
+
+.auth-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.auth-prompt-header h3 {
+  margin: 0;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 1.6rem;
+}
+
+.auth-prompt-close {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0.2rem 0.35rem;
+}
+
+.auth-prompt-close:hover {
+  color: var(--ink);
+}
+
+.auth-prompt-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
 .dialog-header {

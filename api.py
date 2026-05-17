@@ -2,14 +2,14 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from db_utils import Session_dep
 from db import (Post, User, PostCreate, EditPost, Token, TokenData, Comment, PostOut, CommentOut,
                 EditUserData, LikeOut, UserOut, PostComment, Like, UsersWhoLiked,
-                UserIn, PostFeed, CommentFeed)
+                UserIn, PostFeed, CommentFeed, RefreshRequest, RefreshToken)
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pwdlib import PasswordHash
 import jwt
 from jwt.exceptions import InvalidTokenError
 from typing import Annotated
-from sqlmodel import select, func
+from sqlmodel import select, func, delete
 from dotenv import load_dotenv
 import os
 import logging
@@ -22,7 +22,8 @@ if not SECRET:
     raise ValueError("SECRET_KEY environment variable is not set")
 SECRET_KEY = SECRET
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 4
+REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -66,6 +67,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+def create_refresh_token(data: dict):
+    return create_access_token(data, expires_delta=timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))
+
+
 async def get_current_active_user_from_token(token: Annotated[str, Depends(oauth2_scheme)], session: Session_dep):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -78,10 +83,12 @@ async def get_current_active_user_from_token(token: Annotated[str, Depends(oauth
         if username is None:
             raise InvalidTokenError
         token_data = TokenData(user_name=username)
+        token_type = payload.get("type")
+
     except InvalidTokenError:
         raise credentials_exception
     user = get_user(token_data.user_name, session)
-    if not user:
+    if not user or token_type != "access":
         raise credentials_exception
     return user
 
@@ -207,8 +214,50 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token({"sub": user.user_name}, access_token_expires)
-    return Token(access_token=access_token, token_type="bearer")
+    access_token = create_access_token({"sub": user.user_name, "type": "access"}, access_token_expires)
+    refresh_access_token = create_refresh_token({"sub": user.user_name, "type": "refresh"})
+    session.add(RefreshToken(token=refresh_access_token, user_id=user.id,
+                             expires_at=datetime.now(timezone.utc)+timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)))
+    session.commit()
+    return Token(access_token=access_token, refresh_token=refresh_access_token, token_type="bearer")
+
+
+@app.post("/refresh", response_model=Token)
+def refresh_token(body: RefreshRequest, session: Session_dep):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid refresh token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(body.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        token_type = payload.get("type")
+
+        if username is None or token_type != "refresh":
+            raise credentials_exception
+        user_id = get_user(username, session).id
+        refresh_tokens = session.exec(select(RefreshToken.token).where(RefreshToken.user_id == user_id)).all()
+        if body.refresh_token not in refresh_tokens:
+            session.exec(delete(RefreshToken).where(RefreshToken.user_id == user_id))
+            session.commit()
+            raise credentials_exception
+
+    except InvalidTokenError:
+        raise credentials_exception
+    
+    access_token = create_access_token(
+        {"sub": username, "type": "access"},
+        timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    new_refresh_token = create_refresh_token({"sub": username, "type": "refresh"})
+
+    old_token = session.exec(select(RefreshToken).where(RefreshToken.token == body.refresh_token)).first()
+    old_token.token = new_refresh_token
+    old_token.expires_at = datetime.now(timezone.utc)+timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    session.add(old_token)
+    session.commit()
+    return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
 
 
 @app.post("/register/", status_code=status.HTTP_201_CREATED, response_model=dict)

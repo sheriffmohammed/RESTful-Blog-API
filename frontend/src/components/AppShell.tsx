@@ -40,19 +40,22 @@ export function AppShell({ children }: { children: ReactNode }) {
           <NavLink to="/" className="brand-mark">
             Inkline
           </NavLink>
-          <p className="brand-subtitle">Editorial blogging frontend for your FastAPI backend.</p>
         </div>
 
         <nav className="main-nav">
           <NavLink to="/" className="nav-link">
             Feed
           </NavLink>
-          <NavLink to="/posts/new" className="nav-link">
-            New Post
-          </NavLink>
-          <NavLink to="/me" className="nav-link">
-            My Space
-          </NavLink>
+          {currentUser ? (
+            <>
+              <NavLink to="/posts/new" className="nav-link">
+                New Post
+              </NavLink>
+              <NavLink to="/me" className="nav-link">
+                My Space
+              </NavLink>
+            </>
+          ) : null}
           <div
             className="theme-menu-shell"
             onBlur={(event) => {
@@ -111,16 +114,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       <main className="page-shell">
-        {currentUser ? (
+        {!ready ? (
+          <section className="status-banner muted-banner">Restoring your session...</section>
+        ) : currentUser ? (
           <section className="status-banner">
             <span className="status-dot" />
             Signed in as <strong>{currentUser.user_name}</strong>
           </section>
-        ) : ready ? (
-          <section className="status-banner muted-banner">Browse publicly or sign in to publish and interact.</section>
-        ) : (
-          <section className="status-banner muted-banner">Restoring your session...</section>
-        )}
+        ) : null}
         {children}
       </main>
     </div>

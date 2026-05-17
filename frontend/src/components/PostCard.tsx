@@ -6,6 +6,7 @@ import { getFeedScope, getLikedPosts, setPostLiked } from "../lib/storage";
 import type { PostFeed, UsersWhoLiked } from "../lib/types";
 import { ActionMenu } from "./ActionMenu";
 import { AuthorLink } from "./AuthorLink";
+import { AuthPromptDialog } from "./AuthPromptDialog";
 import { LikesDialog, type LikesDialogAnchor } from "./LikesDialog";
 
 function formatStamp(value: string) {
@@ -72,6 +73,7 @@ export function PostCard({
   const [likedUsers, setLikedUsers] = useState<UsersWhoLiked[]>([]);
   const [likesAnchor, setLikesAnchor] = useState<LikesDialogAnchor | null>(null);
   const [liked, setLiked] = useState(false);
+  const [authPromptOpen, setAuthPromptOpen] = useState(false);
   const likeScope = getFeedScope(currentUser?.id);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export function PostCard({
 
   async function handleToggleLike() {
     if (!token || postState.post_id === null) {
-      window.alert("Login first to like posts.");
+      setAuthPromptOpen(true);
       return;
     }
 
@@ -228,6 +230,7 @@ export function PostCard({
         title="People who liked this post"
         users={likedUsers}
       />
+      <AuthPromptDialog open={authPromptOpen} onClose={() => setAuthPromptOpen(false)} />
     </>
   );
 }

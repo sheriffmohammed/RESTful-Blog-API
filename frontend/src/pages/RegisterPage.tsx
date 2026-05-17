@@ -39,18 +39,9 @@ export function RegisterPage() {
       <div className="auth-intro">
         <p className="eyebrow">Join the space</p>
         <h1>Create an account for publishing, comments, and reactions.</h1>
-        <p>Right now <code>photo_path</code> is treated as a plain string, so you can paste any image URL or local path convention you want to use later.</p>
       </div>
 
       <form className="panel-card auth-card" onSubmit={handleSubmit}>
-        <ImageUploadField
-          currentPath={form.photo_path || null}
-          folder="avatars"
-          hint="This saves the image into the project during local development."
-          label="Profile image"
-          onUploaded={(path) => setForm((value) => ({ ...value, photo_path: path }))}
-        />
-
         <label className="field">
           <span>Username</span>
           <input value={form.user_name} onChange={(event) => setForm((value) => ({ ...value, user_name: event.target.value }))} required />
@@ -66,10 +57,15 @@ export function RegisterPage() {
           <input type="password" minLength={8} value={form.password} onChange={(event) => setForm((value) => ({ ...value, password: event.target.value }))} required />
         </label>
 
-        <label className="field">
-          <span>Photo path</span>
-          <input value={form.photo_path} onChange={(event) => setForm((value) => ({ ...value, photo_path: event.target.value }))} placeholder="/images/profile.png" />
-        </label>
+        <div className="register-upload-field">
+          <ImageUploadField
+            currentPath={form.photo_path || null}
+            folder="avatars"
+            hint="This saves the image into the project during local development."
+            label="Profile image"
+            onUploaded={(path) => setForm((value) => ({ ...value, photo_path: path }))}
+          />
+        </div>
 
         {error ? <div className="error-card inline-card">{error}</div> : null}
 

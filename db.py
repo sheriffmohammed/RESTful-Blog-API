@@ -47,6 +47,14 @@ class Like(SQLModel, table=True):
     comment_id: int | None = Field(default=None, foreign_key="comments.comment_id")
 
 
+class RefreshToken(SQLModel, table=True):
+    __tablename__ = "refresh_tokens"
+    id: int | None = Field(default=None, primary_key=True)
+    token: str = Field(unique=True)
+    user_id: int = Field(foreign_key="users.id")
+    expires_at: datetime
+
+
 class UserIn(BaseModel):
     user_name: str = Field(unique=True, max_length=50)
     email: EmailStr = Field(unique=True, max_length=255)
@@ -66,7 +74,12 @@ class EditPost(BaseModel):
 
 class Token(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str
+
+
+class RefreshRequest(SQLModel):
+    refresh_token: str
 
 
 class TokenData(BaseModel):

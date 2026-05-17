@@ -23,7 +23,15 @@ type RequestOptions = {
   token?: string | null;
   body?: BodyInit | object;
   headers?: HeadersInit;
+  skipAuthRetry?: boolean;
 };
+
+type RefreshTokenHandler = () => Promise<string>;
+let refreshTokenHandler: RefreshTokenHandler | null = null;
+
+export function setRefreshTokenHandler(handler: RefreshTokenHandler | null) {
+  refreshTokenHandler = handler;
+}
 
 export class ApiError extends Error {
   status: number;
@@ -69,6 +77,21 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
   const data = await parseResponse(response);
 
+  if (
+    response.status === 401 &&
+    options.token &&
+    !options.skipAuthRetry &&
+    refreshTokenHandler &&
+    path !== "/refresh"
+  ) {
+    const freshToken = await refreshTokenHandler();
+    return request<T>(path, {
+      ...options,
+      token: freshToken,
+      skipAuthRetry: true,
+    });
+  }
+
   if (!response.ok) {
     const message =
       typeof data === "object" && data !== null && "detail" in data
@@ -111,6 +134,15 @@ export const api = {
     return request<RegisterResponse>("/register/", {
       method: "POST",
       body: payload,
+    });
+  },
+
+  refreshToken(refreshToken: string) {
+    return request<TokenResponse>("/refresh", {
+      method: "POST",
+      body: {
+        refresh_token: refreshToken,
+      },
     });
   },
 
