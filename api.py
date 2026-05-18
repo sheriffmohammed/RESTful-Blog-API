@@ -22,7 +22,7 @@ if not SECRET:
     raise ValueError("SECRET_KEY environment variable is not set")
 SECRET_KEY = SECRET
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 4
+ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 password_hash = PasswordHash.recommended()
