@@ -3,6 +3,11 @@
 .env.*.local
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
 frontend/node_modules/
 frontend/dist/

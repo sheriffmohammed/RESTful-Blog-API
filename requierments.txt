@@ -8,3 +8,6 @@ pyjwt
 python-dotenv
 email-validator
 python-multipart
+alembic
+httpx
+pytest

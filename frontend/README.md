@@ -133,13 +133,19 @@ When this variable is set, API calls are sent to that base URL instead of using 
 
 ## Authentication
 
-The app stores the JWT access token locally and sends it with protected API requests:
+The app stores the JWT access token and refresh token locally and sends the access token with protected API requests:
 
 ```http
 Authorization: Bearer <access_token>
 ```
 
-If the token is invalid or expired, the user is logged out.
+When the access token expires, the app attempts to renew it through:
+
+```http
+POST /refresh
+```
+
+If refresh fails, the user is logged out.
 
 ## Theme
 

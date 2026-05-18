@@ -1,20 +1,24 @@
 # Blogging Platform API
 
-A FastAPI backend for a blogging platform with user authentication, posts, comments, likes, and profile updates.
+A FastAPI backend for a blogging platform with user authentication, refresh-token based sessions, posts, comments, likes, profile updates, and a React frontend.
 
 This project is based on the [Blogging Platform API project from roadmap.sh](https://roadmap.sh/projects/blogging-platform-api), with extra features added beyond the original requirements.
 
 ## Features
 
 - User registration and login
-- JWT bearer-token authentication
+- JWT bearer-token authentication with refresh tokens
 - Password hashing with Argon2
 - Create, read, update, and delete blog posts
 - Create, read, update, and delete comments
 - Like and unlike posts or comments
 - View users who liked a post or comment
+- Persistent refresh token storage in the database
+- Alembic migration scaffolding
+- Pytest test suite with in-memory SQLite
 - MySQL database integration with SQLModel
 - React frontend with light, oceanic, dark grey, and cyberpunk themes
+- Local development image uploads through the frontend dev server
 - Environment-based configuration
 
 ## Tech Stack
@@ -28,6 +32,9 @@ This project is based on the [Blogging Platform API project from roadmap.sh](htt
 - PyJWT
 - python-dotenv
 - pwdlib with Argon2
+- Alembic
+- pytest
+- httpx
 
 ## Dependencies
 
@@ -45,18 +52,25 @@ Backend dependencies are installed from `requierments.txt`:
 | `python-dotenv` | Loading environment variables from `.env` |
 | `email-validator` | Email validation for Pydantic `EmailStr` fields |
 | `python-multipart` | Form parsing for the login endpoint |
+| `alembic` | Database migration tooling |
+| `pytest` | Test runner |
+| `httpx` | Test client transport used by FastAPI/Starlette testing |
 
 ## Project Structure
 
 ```text
 .
 +-- api.py
++-- alembic
++|   +-- versions
++-- alembic.ini
 +-- db.py
 +-- db_utils.py
 +-- frontend
 +|   +-- src
 +|   +-- public
 +|   +-- package.json
++-- tests
 +-- requierments.txt
 +-- README.md
 ```
@@ -118,13 +132,24 @@ API_SECRET_KEY=your_secret_key
 CREATE DATABASE blog;
 ```
 
-## Database Tables
+## Database Setup
 
-The SQLModel table models are defined in `db.py`. To create the tables, uncomment the table creation lines at the bottom of `db.py`, run the file once, then comment them again.
+The SQLModel models live in `db.py`, and Alembic is configured in `alembic/` plus `alembic.ini`.
+
+Right now, the repository includes an Alembic environment and an initial revision file, but that revision is still an empty scaffold. That means Alembic is wired in, but the checked-in migration does not yet create the tables by itself.
+
+Until you add real migration operations, the schema can still be created from the SQLModel metadata by temporarily using the helper lines already left in `db.py`:
 
 ```python
 engine = create_engine(DATABASE_URL)
 SQLModel.metadata.create_all(engine)
+```
+
+Once you add real migration contents, the normal Alembic workflow is:
+
+```bash
+alembic revision --autogenerate -m "describe change"
+alembic upgrade head
 ```
 
 ## Running the API
@@ -155,13 +180,19 @@ Login uses OAuth2 password form data:
 POST /login
 ```
 
+Refresh an expired access token:
+
+```http
+POST /refresh
+```
+
 Send authenticated requests with a bearer token:
 
 ```http
 Authorization: Bearer <access_token>
 ```
 
-Access tokens expire after 30 minutes.
+In the current code, access tokens expire after 15 minutes and can be renewed with the refresh token. The frontend stores both tokens and attempts refresh automatically.
 
 ## API Endpoints
 
@@ -170,7 +201,8 @@ Access tokens expire after 30 minutes.
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `POST` | `/register/` | Register a new user |
-| `POST` | `/login` | Login and receive an access token |
+| `POST` | `/login` | Login and receive an access token plus refresh token |
+| `POST` | `/refresh` | Exchange a refresh token for a new token pair |
 | `GET` | `/posts/` | Get all posts |
 | `GET` | `/user-posts/{user_id}` | Get posts by user |
 | `GET` | `/get-post/{post_id}` | Get a single post |
@@ -215,6 +247,16 @@ username=demo_user
 password=strongpass123
 ```
 
+Example response:
+
+```json
+{
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ...",
+  "token_type": "bearer"
+}
+```
+
 ### Create Post
 
 ```json
@@ -234,7 +276,9 @@ password=strongpass123
 
 ## Notes
 
-- `photo_path` is stored as a string. There is no file upload endpoint yet.
+- `photo_path` is stored as a string in the API. For local frontend development, image files can be uploaded through the Vite `POST /__uploads` helper and the returned path can then be stored in API requests.
 - Pagination uses `skip` and `limit` query parameters.
 - The API uses a local MySQL database connection at `localhost:3306/blog`.
+- Refresh tokens are stored in the `refresh_tokens` table and rotated by the `/refresh` endpoint.
+- The test suite uses FastAPI `TestClient`, pytest, and an in-memory SQLite database, so tests do not require MySQL.
 - The dependency file is currently named `requierments.txt`.
